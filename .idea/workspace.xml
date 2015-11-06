@@ -7,7 +7,7 @@
     <ignored path="EllipticCurvesGeneration.iws" />
     <ignored path=".idea/workspace.xml" />
     <ignored path="$PROJECT_DIR$/out/" />
-    <file path="/Dummy.txt" changelist="97331b77-5363-4c11-891d-8e6293cc317d" time="1446812283251" ignored="false" />
+    <file path="/Dummy.txt" changelist="97331b77-5363-4c11-891d-8e6293cc317d" time="1446812293986" ignored="false" />
     <file path="/MainClass.java" changelist="97331b77-5363-4c11-891d-8e6293cc317d" time="1446812224762" ignored="false" />
     <option name="TRACKING_ENABLED" value="true" />
     <option name="SHOW_DIALOG" value="false" />
@@ -341,7 +341,11 @@
       <created>1446812287381</created>
       <updated>1446812287381</updated>
     </task>
-    <option name="localTasksCounter" value="2" />
+    <task id="LOCAL-00002" summary="7 of 9 steps">
+      <created>1446812297084</created>
+      <updated>1446812297084</updated>
+    </task>
+    <option name="localTasksCounter" value="3" />
     <servers />
   </component>
   <component name="ToolWindowManager">
