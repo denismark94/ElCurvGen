@@ -1,5 +1,6 @@
 import java.math.BigInteger;
 import java.security.SecureRandom;
+import java.util.Arrays;
 import java.util.Random;
 import java.util.Set;
 
@@ -16,24 +17,32 @@ public class MainClass {
     public static void main(String[] args) {
         int length = 8;
         Random rnd = new Random(System.nanoTime());
+        //Генерация простого заданной длины
         BigInteger p = new BigInteger(length, rnd);
         do {
             p = p.nextProbablePrime();
         } while (!p.mod(new BigInteger("4")).equals(ONE));
         System.out.println(p);
+
+        //Разложение на сумму квадратов
         Complex f = factor(p);
-        BigInteger ord = checkOrder(p, f.a, f.b);
-        if (f != null)
-        if (ord == null)
-            System.err.println("Не выполняется условие для вычетов");
-        else {
-            if (!checkDivisibility(p,ord,1,30))
-                System.err.println("Не выполняется условие делимости");
-            else {
-                BigInteger[] P_0 = genPoint(p,ord);
-                System.out.println(String.format("P_0 = (%f;%f)",P_0[0],P_0[1]));
-            }
+        if (f == null) {
+            System.err.println("Простое число не удовлетворяет условию p = 1 mod 4");
+            return;
         }
+        f.print();
+        //Проверка на выполнение следствий
+        BigInteger[] ord = order(p,f.a,f.b);
+        if (!checkOrder(ord)) {
+            System.err.println("Не выполняется условие для порядка");
+            return;
+        }
+        if (!checkDivisibility(p, ord, 1, 30)) {
+            System.err.println("Не выполняется условие делимости");
+            return;
+        }
+        BigInteger[] P_0 = genPoint(p, ord);
+        System.out.println(String.format("P_0 = (%d;%d)", P_0[0], P_0[1]));
     }
 
 
@@ -64,27 +73,42 @@ public class MainClass {
         return b;
     }
 
-    public static BigInteger checkOrder(BigInteger p, BigInteger d, BigInteger e) {
+    public static BigInteger[] order(BigInteger p, BigInteger d, BigInteger e)   {
         BigInteger[] ord = new BigInteger[4];
+        //#E(GF(p) = p + 1 + 2d
         ord[0] = p.add(ONE).add(d.multiply(TWO));
+        //#E(GF(p) = p + 1 - 2d
         ord[1] = p.add(ONE).subtract(d.multiply(TWO));
+        //#E(GF(p) = p + 1 + 2e
         ord[2] = p.add(ONE).add(e.multiply(TWO));
+        //#E(GF(p) = p + 1 - 2e
         ord[3] = p.add(ONE).subtract(e.multiply(TWO));
+        return ord;
+    }
+
+    public static boolean checkOrder(BigInteger[] ord) {
+                //#E(GF(p)) = 2m или 4m
+        for (int i = 0; i < 2; i++)
+            if (ord[i].divide(FOUR).isProbablePrime(100))
+                return true;
+        for (int i = 2; i < 4; i++)
+            if (ord[i].divide(TWO).isProbablePrime(100))
+                return true;
+        return false;
+    }
+
+    public static boolean checkDivisibility(BigInteger p, BigInteger[] ord, int n, int k) {
+        int flag = 0;
         for (int i = 0; i < 4; i++)
-            if (ord[i].divide(TWO).isProbablePrime(100) || ord[i].divide(FOUR).isProbablePrime(100))
-                return ord[i];
-        return null;
+                for (int j = 1; j <= k; j++)
+                    if (ord[i].mod(p.pow((int) Math.pow(n, j)).subtract(ONE)).equals(ZERO)) {
+                        flag++;
+                        break;
+                    }
+        return (flag != 4);
     }
 
-    public static boolean checkDivisibility(BigInteger p, BigInteger ord, int n, int k) {
-        for (int i = 1; i <= k; i++) {
-            if (ord.mod(p.pow((int) Math.pow(n, i)).subtract(ONE)).equals(ZERO))
-                return false;
-        }
-        return true;
-    }
-
-    public static BigInteger[] genPoint(BigInteger p, BigInteger ord) {
+    public static BigInteger[] genPoint(BigInteger p, BigInteger[] ord) {
         BigInteger x, y, a, m, lambda;
         Random rand = new Random(System.nanoTime());
         while (true) {
@@ -94,25 +118,31 @@ public class MainClass {
             do
                 y = new BigInteger(p.bitLength(), rand).mod(p);
             while (y.equals(ZERO));
-            BigInteger[] result = {x,y};
+            BigInteger[] result = {x, y};
             a = y.pow(2).subtract(x.pow(2)).divide(x).mod(p);
             if (p.subtract(a).modPow(p.subtract(ONE).divide(TWO), p).equals(ONE))
-                m = ord.divide(FOUR);
-            else
-                m = ord.divide(TWO);
-            if (!m.isProbablePrime(100))
-                break;
+                if (!ord[0].equals(ZERO) && !ord[1].equals(ZERO)) {
+                    System.out.println(ord[0].divide(FOUR));
+                    System.out.println(ord[1].divide(FOUR));
+                    m = ord[0].divide(FOUR);
+                } else
+                    continue;
+            else if (!ord[2].equals(ZERO) && !ord[3].equals(ZERO)) {
+                System.out.println(ord[2].divide(FOUR));
+                System.out.println(ord[3].divide(FOUR));
+                m = ord[3].divide(TWO);
+            } else
+                continue;
             BigInteger x1 = x, x3;
             BigInteger yt = y;
-            for (BigInteger i = ONE; i.compareTo(ord) < 1; i = i.add(ONE)) {
+            for (BigInteger i = ONE; i.compareTo(ord[0]) < 1; i = i.add(ONE)) {
                 lambda = x1.pow(2).multiply(THREE).add(a).divide(yt.multiply(TWO)).mod(p);
                 x3 = lambda.pow(2).subtract(x1.multiply(TWO)).mod(p);
                 yt = lambda.multiply(x1.subtract(x3)).subtract(yt).mod(p);
-                if (yt.equals(ZERO) && i.compareTo(ord) < 0)
+                if (yt.equals(ZERO) && i.compareTo(ord[0]) < 0)
                     return result;
                 x1 = x3;
             }
         }
-        return null;
     }
 }
