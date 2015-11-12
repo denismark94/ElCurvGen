@@ -4,6 +4,7 @@ import java.math.BigInteger;
  * Created by Denis on 02.11.2015.
  */
 public class Complex {
+
     BigInteger a;
     BigInteger b;
     public static Complex ZERO = new Complex(0,0);
