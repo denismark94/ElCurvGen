@@ -7,7 +7,7 @@ public class Complex {
 
     BigInteger a;
     BigInteger b;
-    public static Complex ZERO = new Complex(0,0);
+    public static Complex ZERO = new Complex(0, 0);
 
     public Complex(String a, String b) {
         this.a = new BigInteger(a);
@@ -25,9 +25,9 @@ public class Complex {
     }
 
     public Complex div(Complex y) {
-        //Домножение на сопряженное избавляет от i в знаменателе
+        //Р РµР°Р»РёР·Р°С†РёСЏ РґРµР»РµРЅРёСЏ РєРѕРјРїР»РµРєСЃРЅС‹С… С‡РµСЂРµР· РґРѕРјРЅРѕР¶РµРЅРёРµ РЅР° СЃРѕРїСЂСЏР¶РµРЅРЅС‹Рµ
         Complex z = this.mult(y.conjugate());
-        //знаменатель = a^2-(bi)^2 = a^2+b^2;
+        //Р—РЅР°РјРµРЅР°С‚РµР»СЊ = a^2-(bi)^2 = a^2+b^2;
         BigInteger denom = y.a.multiply(y.a).add(y.b.multiply(y.b));
         BigInteger a = null, b = null;
         int comparator = z.a.abs().mod(denom.abs()).compareTo(denom.divide(new BigInteger("2")));
@@ -52,11 +52,11 @@ public class Complex {
     public Complex mod(Complex y) {
         Complex d = this.div(y);
         Complex e = y.mult(d);
-        return new Complex(this.a.subtract(e.a),this.b.subtract(e.b));
+        return new Complex(this.a.subtract(e.a), this.b.subtract(e.b));
     }
 
     public boolean isZero() {
-        return(this.a.equals(BigInteger.ZERO) & this.b.equals(BigInteger.ZERO));
+        return (this.a.equals(BigInteger.ZERO) & this.b.equals(BigInteger.ZERO));
     }
 
     public Complex mult(Complex y) {

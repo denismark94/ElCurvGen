@@ -2,7 +2,7 @@
 <project version="4">
   <component name="ProjectModuleManager">
     <modules>
-      <module fileurl="file://$PROJECT_DIR$/EllipticCurvesGeneration.iml" filepath="$PROJECT_DIR$/EllipticCurvesGeneration.iml" />
+      <module fileurl="file://$PROJECT_DIR$/ElCurvGen.iml" filepath="$PROJECT_DIR$/ElCurvGen.iml" />
     </modules>
   </component>
 </project>
